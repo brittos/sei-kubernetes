@@ -1,0 +1,49 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: backup-sei
+  namespace: ${KUBERNETES_NAMESPACE}
+spec:
+  concurrencyPolicy: Allow
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    metadata:
+    spec:
+      template:
+        metadata:
+        spec:
+          affinity: {}
+          containers:
+          - command:
+            - bash
+            - /srv/jobs/backup-mysql.sh
+            image: ${REGISTRY}/${REGISTRY_PROJECT}/${IMAGE_BACKUP}
+            imagePullPolicy: Always
+            name: backup-sei
+            resources: {}
+            stdin: true
+            terminationMessagePath: /dev/termination-log
+            terminationMessagePolicy: File
+            tty: true
+            volumeMounts:
+                - mountPath: /var/backup/mysql
+                  name: vol1
+                - mountPath: /sei/arquivos_externos_sei
+                  name: vol2
+          dnsPolicy: ClusterFirst
+          imagePullSecrets:
+            - name: ${REGISTRY_NAME}
+          restartPolicy: Never
+          schedulerName: default-scheduler
+          securityContext: {}
+          terminationGracePeriodSeconds: 30
+          volumes:
+            - name: vol1
+              persistentVolumeClaim:
+                claimName: vol-${KUBERNETES_NAMESPACE}-backup
+            - name: vol2
+              persistentVolumeClaim:
+                claimName: vol-sei-arquivosexternos
+  schedule: 00 20 * * *
+  successfulJobsHistoryLimit: 1
+  suspend: false

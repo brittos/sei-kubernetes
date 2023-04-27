@@ -1,0 +1,17 @@
+apiVersion: v1
+data:
+  .dockerconfigjson: ${REGISTRY_CONFIG}
+kind: Secret
+metadata:
+  managedFields:
+  - apiVersion: v1
+    fieldsType: FieldsV1
+    fieldsV1:
+      f:data:
+        .: {}
+        f:.dockerconfigjson: {}
+      f:type: {}
+    manager: steve
+  name: ${REGISTRY_NAME}
+  namespace: ${KUBERNETES_NAMESPACE}
+type: kubernetes.io/dockerconfigjson
