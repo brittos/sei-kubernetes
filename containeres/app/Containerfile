@@ -1,2 +1,3 @@
 FROM registry.suse.com/bci/bci-base:15.4
-RUN zypper --non-interactive in nano && zypper clean -a
+RUN zypper --non-interactive update
+RUN zypper --non-interactive in nano && zypper --non-interactive clean
